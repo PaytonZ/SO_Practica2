@@ -133,7 +133,7 @@ int myImport(char* nombreArchivoExterno, MiSistemaDeFicheros* miSistemaDeFichero
     /// Comprobamos si existe un nodo-i libre
     // ...
 
-	if( miSistemaDeFicheros->numNodosLibres >= 1)
+	if( miSistemaDeFicheros->numNodosLibres == 0)
 	{
 		perror("No nodos libres");
 		fprintf(stderr, "Error, no existen nodos-i libre en el sistema de ficheros\n");

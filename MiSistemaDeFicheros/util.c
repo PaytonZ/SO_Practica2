@@ -83,7 +83,7 @@ int myImport(char* nombreArchivoExterno, MiSistemaDeFicheros* miSistemaDeFichero
 
     /// Comprobamos que podemos abrir el archivo a importar
     // ...
-    if (stat(nombreArchivoExterno, &stStat) != false) {
+	if (stat(nombreArchivoExterno, &stStat) != false) {
         perror("stat");
         fprintf(stderr, "Error, ejecutando stat en archivo %s\n", nombreArchivoExterno);
         return 2;
@@ -91,27 +91,123 @@ int myImport(char* nombreArchivoExterno, MiSistemaDeFicheros* miSistemaDeFichero
 
     /// Comprobamos que hay suficiente espacio
     // ...
+	int numBloquesNuevoFichero= (stStat.st_size + (TAM_BLOQUE_BYTES - 1)) / TAM_BLOQUE_BYTES;
+
+	if (numBloquesNuevoFichero > miSistemaDeFicheros->superBloque.numBloquesLibres)
+	{
+		perror("No hay espacio");
+		fprintf(stderr, "Error, no hay espacio suficiente %s\n", nombreArchivoExterno);
+        return 2;
+	}
+
 
     /// Comprobamos que el tamaño total es suficientemente pequeño
     /// para ser almacenado en MAX_BLOCKS_PER_FILE
     // ...
+	if (stStat.st_size/TAM_BLOQUE_BYTES > MAX_BLOQUES_POR_ARCHIVO)
+	{
+		perror("Tam max excedido");
+		fprintf(stderr, "Error, el tamaño total no es suficientemente pequeño %s\n", nombreArchivoExterno);
+        return 2;
+	}
 
     /// Comprobamos que la longitud del nombre del archivo es adecuada
     // ...
+	if (strlen(nombreArchivoExterno) > MAX_TAM_NOMBRE_ARCHIVO)
+	{	
+		perror("Longitud de nombre de fichero superada");
+		fprintf(stderr, "Error, la longitud del nombre del archivo no es adecuada %s\n", nombreArchivoExterno);
+        return 2;
+	}
+		
 
     /// Comprobamos que el fichero no existe ya
     // ...
-
+	if ( buscaPosDirectorio(miSistemaDeFicheros,nombreArchivoInterno) != -1 )
+	{
+		perror("Ya existe");
+		fprintf(stderr, "Ya existe el nombre del fichero en el sistema\n");
+        return 2;
+	}
+		
     /// Comprobamos si existe un nodo-i libre
     // ...
+
+	if( miSistemaDeFicheros->numNodosLibres >= 1)
+	{
+		perror("No nodos libres");
+		fprintf(stderr, "Error, no existen nodos-i libre en el sistema de ficheros\n");
+        return 2;
+	}
 
     /// Comprobamos que todavía cabe un archivo en el directorio (MAX_ARCHIVOS_POR_DIRECTORIO)
     // ...
 
+	if(miSistemaDeFicheros->directorio.numArchivos == MAX_ARCHIVOS_POR_DIRECTORIO )
+	{
+		perror("Maximo de archivos por directorio");
+		fprintf(stderr, "Error, no cabe un archivo en el directorio del sistema de ficheros\n");
+        return 2;
+	}
+
     /// Actualizamos toda la información:
     /// mapa de bits, directorio, nodo-i, bloques de datos, superbloque ...
     // ...
-    
+	/* Buscar nodo-i libre y añadirlo al array de memoria -> malloc()
+	Decrementar contador ntodos i libres
+	REservar bloques para el fichero y actualizar contenido
+		Reserva bloquesnodosi()
+		escribedatos()
+	Actualizar directorio raiz
+		Buscar entrada libre
+		INicializar entrada y marcarla como ocupada
+		Incrementar contador de archvios
+	Actualizar superbloque
+	Actualizar metadatos en disco
+		escribemapadebitos
+		superbloque
+		directorio
+		nodoi
+	*/
+	
+	// Buscar nodo-i libre y añadirlo al array de memoria -> malloc()
+	int nodo_i = buscaNodoLibre(miSistemaDeFicheros);
+
+	EstructuraNodoI *estructuraNodo = malloc(sizeof(EstructuraNodoI));
+	miSistemaDeFicheros->nodosI[nodo_i] = estructuraNodo;
+
+	//Decrementar contador ntodos i libres
+	miSistemaDeFicheros->numNodosLibres--;
+
+	//Reservar bloques para el fichero y actualizar contenido
+	//	Reserva bloquesnodosi()    
+	//	escribedatos()
+	reservaBloquesNodosI(miSistemaDeFicheros,estructuraNodo->idxBloques,numBloquesNuevoFichero);
+	escribeDatos(miSistemaDeFicheros,handle, nodo_i);
+	
+	//Actualizar directorio raiz
+	//Buscar entrada libre
+	//Inicializar entrada y marcarla como ocupada
+
+	int i=0;
+	while(i< MAX_ARCHIVOS_POR_DIRECTORIO && (miSistemaDeFicheros->directorio.archivos[i].libre != 0)) {
+		i++;	
+	}
+
+	EstructuraArchivo *archivoLibre = &miSistemaDeFicheros->directorio.archivos[i];
+	archivoLibre->idxNodoI=nodo_i;
+	strcpy(archivoLibre->nombreArchivo,nombreArchivoInterno);
+	archivoLibre->libre=0;
+
+
+	//Actualizar superbloque
+	//Actualizar metadatos en disco
+	//	escribemapadebitos
+	//	superbloque
+	//	directorio
+	//	nodoi
+
+
     sync();
     close(handle);
     return 0;

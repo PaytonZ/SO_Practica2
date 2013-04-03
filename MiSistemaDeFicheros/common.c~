@@ -155,21 +155,11 @@ void copiaNodoI(EstructuraNodoI* dest, EstructuraNodoI* src) {
     for (i = 0; i < MAX_BLOQUES_POR_ARCHIVO; i++)
         dest->idxBloques[i] = src->idxBloques[i];
 }
-/*
-int buscaNodoLibre(MiSistemaDeFicheros* miSistemaDeFicheros) {
-    int i;
-    for (i = 0; i < MAX_NODOSI; i++) {
-        if (miSistemaDeFicheros->nodosI[i] == NULL)
-            return i;
-    }
-    return -1; // NO hay nodos-i libres. Esto no debería ocurrir.
-}
-*/
 
 int buscaNodoLibre(MiSistemaDeFicheros* miSistemaDeFicheros) {
     int i;
     for (i = 0; i < MAX_NODOSI; i++) {
-        if (miSistemaDeFicheros->nodosI[i]->libre==1)
+        if (miSistemaDeFicheros->nodosI[i] == NULL)
             return i;
     }
     return -1; // NO hay nodos-i libres. Esto no debería ocurrir.

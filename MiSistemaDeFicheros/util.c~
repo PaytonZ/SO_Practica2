@@ -60,15 +60,18 @@ int myMkfs(MiSistemaDeFicheros* miSistemaDeFicheros, int tamDisco, char* nombreA
 	nodoActual.libre = 1;
 	// Escribimos nodoActual MAX_NODOSI veces en disco
 	// ...
-	for(i=0; i < MAX_NODOSI ; i++)
+	/*for(i=0; i < MAX_NODOSI ; i++)
 	{
 	  miSistemaDeFicheros->nodosI[i]=&nodoActual;
-	}
+	}*/
 
 	/// SUPERBLOQUE
 	// Inicializamos el superbloque (ver common.c) y lo escribimos en disco
 	// ...
-	miSistemaDeFicheros->numNodosLibres=100;
+	
+	printf(".............    %d\n" , MAX_NODOSI);
+	
+	miSistemaDeFicheros->numNodosLibres=100; //linea inventada
 	
 	initSuperBloque(miSistemaDeFicheros,tamDisco);
 	escribeSuperBloque(miSistemaDeFicheros);
@@ -149,7 +152,8 @@ int myImport(char* nombreArchivoExterno, MiSistemaDeFicheros* miSistemaDeFichero
 		
     /// Comprobamos si existe un nodo-i libre
     // ...
-
+    printf(".............    %d\n" , miSistemaDeFicheros->numNodosLibres);
+    
 	if( miSistemaDeFicheros->numNodosLibres == 0)
 	{
 		perror("No nodos libres");
@@ -265,6 +269,7 @@ int myExport(MiSistemaDeFicheros* miSistemaDeFicheros, char* nombreArchivoIntern
     
     /// Buscamos el archivo nombreArchivoInterno en miSistemaDeFicheros
     // ...
+    
 
     /// Si ya existe el archivo nombreArchivoExterno en linux preguntamos si sobreescribir
     // ...

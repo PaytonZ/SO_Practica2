@@ -299,7 +299,7 @@ void myLs(MiSistemaDeFicheros* miSistemaDeFicheros) {
 	     if (miSistemaDeFicheros->directorio.archivos[i].libre==0)
 	     {
 	      copiaNodoI(miSistemaDeFicheros->nodosI[miSistemaDeFicheros->directorio.archivos[i].idxNodoI],&nodoActual);
-	      printf("%s \t %d",miSistemaDeFicheros->directorio.archivos[i].nombreArchivo,nodoActual.tamArchivo);
+	      printf("%s \t %d \t",miSistemaDeFicheros->directorio.archivos[i].nombreArchivo,nodoActual.tamArchivo);
 	      localTime = localtime(&nodoActual.tiempoModificado);
 	       char buf[80];
 	        strftime(buf, sizeof(buf), "%a %Y-%m-%d %H:%M:%S %Z", localTime);

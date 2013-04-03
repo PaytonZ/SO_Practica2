@@ -68,7 +68,7 @@ int myMkfs(MiSistemaDeFicheros* miSistemaDeFicheros, int tamDisco, char* nombreA
 	/// SUPERBLOQUE
 	// Inicializamos el superbloque (ver common.c) y lo escribimos en disco
 	// ...
-	miSistemaDeFicheros->numNodosLibres=100;
+	miSistemaDeFicheros->numNodosLibres=100; //linea inventada
 	
 	initSuperBloque(miSistemaDeFicheros,tamDisco);
 	escribeSuperBloque(miSistemaDeFicheros);
@@ -190,6 +190,9 @@ int myImport(char* nombreArchivoExterno, MiSistemaDeFicheros* miSistemaDeFichero
 	// Buscar nodo-i libre y añadirlo al array de memoria -> malloc()
 	int nodo_i = buscaNodoLibre(miSistemaDeFicheros);
 
+	printf("*************        %d\n" , nodo_i);
+	
+	
 	EstructuraNodoI *estructuraNodo = malloc(sizeof(EstructuraNodoI));
 	
         estructuraNodo->numBloques=numBloquesNuevoFichero;                               
@@ -280,12 +283,66 @@ int myExport(MiSistemaDeFicheros* miSistemaDeFicheros, char* nombreArchivoIntern
 int myRm(MiSistemaDeFicheros* miSistemaDeFicheros, char* nombreArchivo) {
 	/// Completar:
 	// Busca el archivo con nombre "nombreArchivo"
+	int posicion;
+	if ((posicion=buscaPosDirectorio(miSistemaDeFicheros,nombreArchivo))== -1)
+	{
+	  return -1;
+	}
+	int nodo_i= miSistemaDeFicheros->directorio.archivos[posicion].idxNodoI;
+	
+	printf("*************        %d\n" , nodo_i);
+	
+	EstructuraNodoI *estructuraNodo = malloc(sizeof(EstructuraNodoI));
+	
 	// Obtiene el nodo-i asociado y lo actualiza
+	
+	estructuraNodo->libre=1;
+	
+	
 	// Actualiza el superbloque (numBloquesLibres) y el mapa de bits
+	
+	miSistemaDeFicheros->superBloque.numBloquesLibres+=miSistemaDeFicheros->nodosI[nodo_i]->numBloques;
+	
 	// Libera el puntero y lo hace NULL
+	
+	miSistemaDeFicheros->nodosI[nodo_i]=NULL;
+	
 	// Actualiza el archivo
+	
+	miSistemaDeFicheros->directorio.archivos[posicion].libre=1;
 	// Finalmente, actualiza en disco el directorio, nodoi, mapa de bits y superbloque
 	// ...
+	
+	if (escribeDirectorio(miSistemaDeFicheros) ==-1)
+	{
+	  perror("escribir directorio error");
+	 return -1;
+	}
+	if (escribeNodoI(miSistemaDeFicheros,nodo_i,estructuraNodo))
+	{
+	 perror("nodo i error ");
+	 return -1;
+	}
+	
+	
+	if (escribeMapaDeBits(miSistemaDeFicheros) == -1)
+	{
+	 perror("mapa de bits error");
+	 return -1;
+	}
+	
+	//	superbloque
+	 if (escribeSuperBloque(miSistemaDeFicheros) ==-1 )
+	 {
+	   perror("superbloque error");
+	 return -1;
+	 }
+	//	directorio
+	
+	
+	
+	
+	
 	return 0;
 }
 
@@ -302,7 +359,7 @@ void myLs(MiSistemaDeFicheros* miSistemaDeFicheros) {
 	      printf("%s \t %d \t",miSistemaDeFicheros->directorio.archivos[i].nombreArchivo,nodoActual.tamArchivo);
 	      localTime = localtime(&nodoActual.tiempoModificado);
 	       char buf[80];
-	        strftime(buf, sizeof(buf), "%a %Y-%m-%d %H:%M:%S %Z", localTime);
+	        strftime(buf, sizeof(buf), "%D \t %R", localTime);
 		printf("%s\n", buf);
 	      
 	      

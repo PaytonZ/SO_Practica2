@@ -18,7 +18,10 @@ int escribeMapaDeBits(MiSistemaDeFicheros* miSistemaDeFicheros) {
 
 int escribeNodoI(MiSistemaDeFicheros* miSistemaDeFicheros, int numNodoI, EstructuraNodoI* nodoI) {
     int posNodoI;
-    assert(numNodoI < MAX_NODOSI);
+    
+    printf("NUM NODO I %d ----- %d MAX NODOS I %d " ,  numNodoI , MAX_NODOSI);
+    
+    assert(numNodoI < MAX_NODOSI) ;
     posNodoI = calculaPosNodoI(numNodoI);
 
     if (lseek(miSistemaDeFicheros->discoVirtual, posNodoI, SEEK_SET) == (off_t) - 1) {
@@ -152,7 +155,7 @@ void copiaNodoI(EstructuraNodoI* dest, EstructuraNodoI* src) {
     for (i = 0; i < MAX_BLOQUES_POR_ARCHIVO; i++)
         dest->idxBloques[i] = src->idxBloques[i];
 }
-
+/*
 int buscaNodoLibre(MiSistemaDeFicheros* miSistemaDeFicheros) {
     int i;
     for (i = 0; i < MAX_NODOSI; i++) {
@@ -161,6 +164,17 @@ int buscaNodoLibre(MiSistemaDeFicheros* miSistemaDeFicheros) {
     }
     return -1; // NO hay nodos-i libres. Esto no debería ocurrir.
 }
+*/
+
+int buscaNodoLibre(MiSistemaDeFicheros* miSistemaDeFicheros) {
+    int i;
+    for (i = 0; i < MAX_NODOSI; i++) {
+        if (miSistemaDeFicheros->nodosI[i]->libre==1)
+            return i;
+    }
+    return -1; // NO hay nodos-i libres. Esto no debería ocurrir.
+}
+
 
 void reservaBloquesNodosI(MiSistemaDeFicheros* miSistemaDeFicheros, DISK_LBA idxBloques[], int numBloques) {
     int i = 0;

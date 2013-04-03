@@ -202,7 +202,7 @@ int myImport(char* nombreArchivoExterno, MiSistemaDeFicheros* miSistemaDeFichero
 
 	//Actualizar superbloque
 	
-	miSistemaDeFicheros->superBloque.numBloquesLibres-=numBloquesNuevoFichero;
+	miSistemaDeFicheros->superBloque.numBloquesLibres;//-=numBloquesNuevoFichero;
 	
 	
 	//Actualizar metadatos en disco

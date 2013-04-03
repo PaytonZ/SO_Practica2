@@ -68,8 +68,12 @@ int myMkfs(MiSistemaDeFicheros* miSistemaDeFicheros, int tamDisco, char* nombreA
 	/// SUPERBLOQUE
 	// Inicializamos el superbloque (ver common.c) y lo escribimos en disco
 	// ...
+	miSistemaDeFicheros->numNodosLibres=100;
+	
 	initSuperBloque(miSistemaDeFicheros,tamDisco);
 	escribeSuperBloque(miSistemaDeFicheros);
+	
+	
 	
 	sync();
 
@@ -110,7 +114,7 @@ int myImport(char* nombreArchivoExterno, MiSistemaDeFicheros* miSistemaDeFichero
 	{
 		perror("No hay espacio");
 		fprintf(stderr, "Error, no hay espacio suficiente %s\n", nombreArchivoExterno);
-        return 2;
+        return 3;
 	}
 
 
@@ -121,7 +125,7 @@ int myImport(char* nombreArchivoExterno, MiSistemaDeFicheros* miSistemaDeFichero
 	{
 		perror("Tam max excedido");
 		fprintf(stderr, "Error, el tamaño total no es suficientemente pequeño %s\n", nombreArchivoExterno);
-        return 2;
+        return 4;
 	}
 
     /// Comprobamos que la longitud del nombre del archivo es adecuada
@@ -130,7 +134,7 @@ int myImport(char* nombreArchivoExterno, MiSistemaDeFicheros* miSistemaDeFichero
 	{	
 		perror("Longitud de nombre de fichero superada");
 		fprintf(stderr, "Error, la longitud del nombre del archivo no es adecuada %s\n", nombreArchivoExterno);
-        return 2;
+        return 5;
 	}
 		
 
@@ -140,7 +144,7 @@ int myImport(char* nombreArchivoExterno, MiSistemaDeFicheros* miSistemaDeFichero
 	{
 		perror("Ya existe");
 		fprintf(stderr, "Ya existe el nombre del fichero en el sistema\n");
-        return 2;
+        return 6;
 	}
 		
     /// Comprobamos si existe un nodo-i libre
@@ -150,7 +154,7 @@ int myImport(char* nombreArchivoExterno, MiSistemaDeFicheros* miSistemaDeFichero
 	{
 		perror("No nodos libres");
 		fprintf(stderr, "Error, no existen nodos-i libre en el sistema de ficheros\n");
-        return 2;
+        return 7;
 	}
 
     /// Comprobamos que todavía cabe un archivo en el directorio (MAX_ARCHIVOS_POR_DIRECTORIO)
@@ -160,7 +164,7 @@ int myImport(char* nombreArchivoExterno, MiSistemaDeFicheros* miSistemaDeFichero
 	{
 		perror("Maximo de archivos por directorio");
 		fprintf(stderr, "Error, no cabe un archivo en el directorio del sistema de ficheros\n");
-        return 2;
+        return 8;
 	}
 
     /// Actualizamos toda la información:
@@ -187,8 +191,12 @@ int myImport(char* nombreArchivoExterno, MiSistemaDeFicheros* miSistemaDeFichero
 	int nodo_i = buscaNodoLibre(miSistemaDeFicheros);
 
 	EstructuraNodoI *estructuraNodo = malloc(sizeof(EstructuraNodoI));
+	
+        estructuraNodo->numBloques=numBloquesNuevoFichero;                               
+    estructuraNodo-> tamArchivo= numBloquesNuevoFichero* TAM_BLOQUE_BYTES;                              
+   estructuraNodo->tiempoModificado=time(0);   
+   
 	miSistemaDeFicheros->nodosI[nodo_i] = estructuraNodo;
-
 	//Decrementar contador ntodos i libres
 	miSistemaDeFicheros->numNodosLibres--;
 
@@ -220,15 +228,28 @@ int myImport(char* nombreArchivoExterno, MiSistemaDeFicheros* miSistemaDeFichero
 	
 	//Actualizar metadatos en disco
 	//	escribemapadebitos
-	escribeMapaDeBits(miSistemaDeFicheros);
+	if (escribeMapaDeBits(miSistemaDeFicheros) == -1)
+	{
+	 perror("mapa de bits error");
+	 return 9;
+	}
 	
 	//	superbloque
-	escribeSuperBloque(miSistemaDeFicheros);
+	 if (escribeSuperBloque(miSistemaDeFicheros) ==-1 )
+	 {
+	   perror("superbloque error");
+	 return 10;
+	 }
 	//	directorio
 	
-	escribeDirectorio(miSistemaDeFicheros);
+	if (escribeDirectorio(miSistemaDeFicheros) ==-1)
+	{
+	  perror("escribir directorio error");
+	 return 11;
+	}
+	
 	//	nodoi
-	escribeDatos(miSistemaDeFicheros,handle,i);
+	//escribeDatos(miSistemaDeFicheros,handle,i);
 
 
     sync();
@@ -269,13 +290,24 @@ int myRm(MiSistemaDeFicheros* miSistemaDeFicheros, char* nombreArchivo) {
 }
 
 void myLs(MiSistemaDeFicheros* miSistemaDeFicheros) {
-	//struct tm* localTime;
+	struct tm* localTime;
 	int numArchivosEncontrados = 0;
-	//EstructuraNodoI nodoActual;
+	EstructuraNodoI nodoActual;
 	int i;
 	// Recorre el sistema de ficheros, listando los archivos encontrados
 	for (i = 0; i < MAX_ARCHIVOS_POR_DIRECTORIO; i++) {
-		// ...
+	     if (miSistemaDeFicheros->directorio.archivos[i].libre==0)
+	     {
+	      copiaNodoI(miSistemaDeFicheros->nodosI[miSistemaDeFicheros->directorio.archivos[i].idxNodoI],&nodoActual);
+	      printf("%s \t %d",miSistemaDeFicheros->directorio.archivos[i].nombreArchivo,nodoActual.tamArchivo);
+	      localTime = localtime(&nodoActual.tiempoModificado);
+	       char buf[80];
+	        strftime(buf, sizeof(buf), "%a %Y-%m-%d %H:%M:%S %Z", localtime);
+		printf("%s\n", buf);
+	      
+	      
+	     }
+	     
 	}
 
 	if (numArchivosEncontrados == 0) {

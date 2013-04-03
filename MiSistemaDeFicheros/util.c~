@@ -60,7 +60,10 @@ int myMkfs(MiSistemaDeFicheros* miSistemaDeFicheros, int tamDisco, char* nombreA
 	nodoActual.libre = 1;
 	// Escribimos nodoActual MAX_NODOSI veces en disco
 	// ...
-	initNodosI(miSistemaDeFicheros);
+	for(i=0; i < MAX_NODOSI ; i++)
+	{
+	  miSistemaDeFicheros->nodosI[i]=nodoActual;
+	}
 
 	/// SUPERBLOQUE
 	// Inicializamos el superbloque (ver common.c) y lo escribimos en disco

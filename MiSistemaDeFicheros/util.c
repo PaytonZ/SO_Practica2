@@ -302,7 +302,7 @@ void myLs(MiSistemaDeFicheros* miSistemaDeFicheros) {
 	      printf("%s \t %d",miSistemaDeFicheros->directorio.archivos[i].nombreArchivo,nodoActual.tamArchivo);
 	      localTime = localtime(&nodoActual.tiempoModificado);
 	       char buf[80];
-	        strftime(buf, sizeof(buf), "%a %Y-%m-%d %H:%M:%S %Z", localtime);
+	        strftime(buf, sizeof(buf), "%a %Y-%m-%d %H:%M:%S %Z", localTime);
 		printf("%s\n", buf);
 	      
 	      

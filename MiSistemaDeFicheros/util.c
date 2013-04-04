@@ -205,16 +205,18 @@ int myImport(char* nombreArchivoExterno, MiSistemaDeFicheros* miSistemaDeFichero
 	*/
 	
 	// Buscar nodo-i libre y añadirlo al array de memoria -> malloc()
+	
+	
+	
+	
 	int nodo_i = buscaNodoLibre(miSistemaDeFicheros);
 
 	printf("*************        %d\n" , nodo_i);
-	
+	printf("mas datos irrelevantes %d" , numBloquesNuevoFichero);
 	
 	EstructuraNodoI *estructuraNodo = malloc(sizeof(EstructuraNodoI));
 	
         estructuraNodo->numBloques=numBloquesNuevoFichero;   
-	
-	
 	estructuraNodo->tamArchivo=numBloquesNuevoFichero* TAM_BLOQUE_BYTES;                              
 	estructuraNodo->tiempoModificado=time(0);
 	
@@ -226,10 +228,7 @@ int myImport(char* nombreArchivoExterno, MiSistemaDeFicheros* miSistemaDeFichero
 	//	escribedatos()
 	reservaBloquesNodosI(miSistemaDeFicheros,estructuraNodo->idxBloques,numBloquesNuevoFichero);
 	miSistemaDeFicheros->nodosI[nodo_i]=estructuraNodo;
-	
-	
-	
-	
+				
 	escribeDatos(miSistemaDeFicheros,handle, nodo_i);
 
 	//Actualizar directorio raiz
@@ -279,12 +278,12 @@ int myImport(char* nombreArchivoExterno, MiSistemaDeFicheros* miSistemaDeFichero
 	//	nodoi
 
 	
-	if (escribeNodoI(miSistemaDeFicheros,nodo_i,estructuraNodo) == -1 )
+	/*if (escribeNodoI(miSistemaDeFicheros,nodo_i,estructuraNodo) == -1 )
 	{
 	  perror("escribe nodo i error");
 	  return 12;
 	}
-	
+	*/
 	
 	
 
@@ -345,6 +344,7 @@ int myRm(MiSistemaDeFicheros* miSistemaDeFicheros, char* nombreArchivo) {
 	
 	miSistemaDeFicheros->superBloque.numBloquesLibres+=miSistemaDeFicheros->nodosI[nodo_i]->numBloques;
 	
+	
 	// Libera el puntero y lo hace NULL
 	
 	miSistemaDeFicheros->nodosI[nodo_i]=NULL;
@@ -393,11 +393,20 @@ void myLs(MiSistemaDeFicheros* miSistemaDeFicheros) {
 	int numArchivosEncontrados = 0;
 	EstructuraNodoI nodoActual;
 	int i;
+	
 	// Recorre el sistema de ficheros, listando los archivos encontrados
 	for (i = 0; i < MAX_ARCHIVOS_POR_DIRECTORIO; i++) {
 	     if (miSistemaDeFicheros->directorio.archivos[i].libre==0)
 	     {
-	      copiaNodoI(miSistemaDeFicheros->nodosI[miSistemaDeFicheros->directorio.archivos[i].idxNodoI],&nodoActual);
+	       printf("NODO TROLL ES .... %d\n", miSistemaDeFicheros->directorio.archivos[i].idxNodoI);
+	       
+	      copiaNodoI(miSistemaDeFicheros->nodosI[	miSistemaDeFicheros->directorio.archivos[i].idxNodoI],&nodoActual);
+	      
+	      printf("valor de bytes del nodo troll es .... %d\n",nodoActual.numBloques );
+	      
+	      printf("valor de bytes del nodo troll es .... %d\n",miSistemaDeFicheros->nodosI[miSistemaDeFicheros->directorio.archivos[i].idxNodoI]->numBloques );
+	      
+	      
 	      printf("%s \t %d \t",miSistemaDeFicheros->directorio.archivos[i].nombreArchivo,nodoActual.tamArchivo);
 	      localTime = localtime(&nodoActual.tiempoModificado);
 	       char buf[80];

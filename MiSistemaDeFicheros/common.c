@@ -19,8 +19,6 @@ int escribeMapaDeBits(MiSistemaDeFicheros* miSistemaDeFicheros) {
 int escribeNodoI(MiSistemaDeFicheros* miSistemaDeFicheros, int numNodoI, EstructuraNodoI* nodoI) {
     int posNodoI;
     
-    printf("NUM NODO I %d ----- %d MAX NODOS I %d " ,  numNodoI , MAX_NODOSI);
-    
     assert(numNodoI < MAX_NODOSI) ;
     posNodoI = calculaPosNodoI(numNodoI);
 
@@ -158,7 +156,7 @@ void copiaNodoI(EstructuraNodoI* dest, EstructuraNodoI* src) {
 
 int buscaNodoLibre(MiSistemaDeFicheros* miSistemaDeFicheros) {
     int i;
-    for (i = 0; i < MAX_NODOSI; i++) {
+   for (i = 0; i < MAX_NODOSI; i++) {
         if (miSistemaDeFicheros->nodosI[i] == NULL)
             return i;
     }

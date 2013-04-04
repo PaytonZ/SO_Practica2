@@ -48,7 +48,7 @@ int myMkfs(MiSistemaDeFicheros* miSistemaDeFicheros, int tamDisco, char* nombreA
 	if (escribeMapaDeBits(miSistemaDeFicheros) == -1 )
 	{
 	  perror("error mapa de bits");
-	  
+	  return 3;
 	}
 
 	// DIRECTORIO
@@ -77,7 +77,7 @@ int myMkfs(MiSistemaDeFicheros* miSistemaDeFicheros, int tamDisco, char* nombreA
 	}
 	  
 	}
-	initNodosI(miSistemaDeFicheros);
+	//initNodosI(miSistemaDeFicheros);
 	
 	// SUPERBLOQUE
 	// Inicializamos el superbloque (ver common.c) y lo escribimos en disco
@@ -212,12 +212,11 @@ int myImport(char* nombreArchivoExterno, MiSistemaDeFicheros* miSistemaDeFichero
 	
 	EstructuraNodoI *estructuraNodo = malloc(sizeof(EstructuraNodoI));
 	
-        estructuraNodo->numBloques=numBloquesNuevoFichero;                               
-    estructuraNodo-> tamArchivo= numBloquesNuevoFichero* TAM_BLOQUE_BYTES;                              
-   estructuraNodo->tiempoModificado=time(0);   
-   
+        estructuraNodo->numBloques=numBloquesNuevoFichero;   
 	
 	
+	estructuraNodo->tamArchivo=numBloquesNuevoFichero* TAM_BLOQUE_BYTES;                              
+	estructuraNodo->tiempoModificado=time(0);
 	
 	//Decrementar contador ntodos i libres
 	miSistemaDeFicheros->numNodosLibres--;
@@ -226,6 +225,11 @@ int myImport(char* nombreArchivoExterno, MiSistemaDeFicheros* miSistemaDeFichero
 	//	Reserva bloquesnodosi()    
 	//	escribedatos()
 	reservaBloquesNodosI(miSistemaDeFicheros,estructuraNodo->idxBloques,numBloquesNuevoFichero);
+	miSistemaDeFicheros->nodosI[nodo_i]=estructuraNodo;
+	
+	
+	
+	
 	escribeDatos(miSistemaDeFicheros,handle, nodo_i);
 
 	//Actualizar directorio raiz
@@ -273,11 +277,14 @@ int myImport(char* nombreArchivoExterno, MiSistemaDeFicheros* miSistemaDeFichero
 	}
 	
 	//	nodoi
+
+	
 	if (escribeNodoI(miSistemaDeFicheros,nodo_i,estructuraNodo) == -1 )
 	{
 	  perror("escribe nodo i error");
 	  return 12;
 	}
+	
 	
 	
 
@@ -292,7 +299,11 @@ int myExport(MiSistemaDeFicheros* miSistemaDeFicheros, char* nombreArchivoIntern
     
     /// Buscamos el archivo nombreArchivoInterno en miSistemaDeFicheros
     // ...
-    
+    int posicion;
+     if ((posicion=buscaPosDirectorio(miSistemaDeFicheros,nombreArchivoInterno))==-1)
+	{
+	  return -1;
+	}
 
     /// Si ya existe el archivo nombreArchivoExterno en linux preguntamos si sobreescribir
     // ...
@@ -312,13 +323,14 @@ int myRm(MiSistemaDeFicheros* miSistemaDeFicheros, char* nombreArchivo) {
 	/// Completar:
 	// Busca el archivo con nombre "nombreArchivo"
 	int posicion;
-	if ((posicion=buscaPosDirectorio(miSistemaDeFicheros,nombreArchivo))== -1)
+	if ((posicion=buscaPosDirectorio(miSistemaDeFicheros,nombreArchivo))==-1)
 	{
 	  return -1;
 	}
 	int nodo_i= miSistemaDeFicheros->directorio.archivos[posicion].idxNodoI;
 	
 	printf("*************        %d\n" , nodo_i);
+	printf("NUM BLOQUES XD ;F --------------- %d\n", miSistemaDeFicheros->nodosI[nodo_i]->numBloques);
 	
 	EstructuraNodoI *estructuraNodo = malloc(sizeof(EstructuraNodoI));
 	
@@ -328,6 +340,8 @@ int myRm(MiSistemaDeFicheros* miSistemaDeFicheros, char* nombreArchivo) {
 	
 	
 	// Actualiza el superbloque (numBloquesLibres) y el mapa de bits
+	
+	
 	
 	miSistemaDeFicheros->superBloque.numBloquesLibres+=miSistemaDeFicheros->nodosI[nodo_i]->numBloques;
 	
@@ -346,7 +360,7 @@ int myRm(MiSistemaDeFicheros* miSistemaDeFicheros, char* nombreArchivo) {
 	  perror("escribir directorio error");
 	 return -1;
 	}
-	if (escribeNodoI(miSistemaDeFicheros,nodo_i,estructuraNodo))
+	if (escribeNodoI(miSistemaDeFicheros,nodo_i,estructuraNodo)==-1)
 	{
 	 perror("nodo i error ");
 	 return -1;

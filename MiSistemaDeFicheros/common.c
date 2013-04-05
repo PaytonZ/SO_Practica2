@@ -87,8 +87,7 @@ int escribeDatos(MiSistemaDeFicheros* miSistemaDeFicheros, int archivoExterno, i
         }
         if (write(miSistemaDeFicheros->discoVirtual, &buffer, TAM_BLOQUE_BYTES) == -1) {
             perror("Falló write en escribeDatos");
-            retu
-            rn -1;
+            return -1;
         }
     }
     if (read(archivoExterno, &buffer, bytesRestantes) == -1) {

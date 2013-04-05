@@ -298,8 +298,10 @@ int myImport(char* nombreArchivoExterno, MiSistemaDeFicheros* miSistemaDeFichero
 }
 
 int myExport(MiSistemaDeFicheros* miSistemaDeFicheros, char* nombreArchivoInterno, char* nombreArchivoExterno) {
-    int handle;
-    
+   
+  
+  int handle;
+    int i;
     /// Buscamos el archivo nombreArchivoInterno en miSistemaDeFicheros
     // ...
     int posicion;
@@ -307,7 +309,7 @@ int myExport(MiSistemaDeFicheros* miSistemaDeFicheros, char* nombreArchivoIntern
 	{
 	  return -1;
 	}
-    handle = open(nombreArchivoExterno, O_RDONLY);
+   // handle = open(nombreArchivoExterno, O_RDONLY);
     /// Si ya existe el archivo nombreArchivoExterno en linux preguntamos si sobreescribir
     // ...
      /*if (handle != -1) {
@@ -329,12 +331,55 @@ int myExport(MiSistemaDeFicheros* miSistemaDeFicheros, char* nombreArchivoIntern
        if (respuesta == 'N' || respuesta == 'n' ) return 2;
        
     }
-    close(handle);*/
+    //close(handle);
+    */
+    if ((handle=open(nombreArchivoExterno,O_CREAT | O_RDWR, S_IRUSR | S_IWUSR))==-1)
+    {
+      perror("Error abriendo archivo externo a exportar");
+     return -1; 
+    }
     
-    handle= open(nombreArchivoExterno , O_CREAT| O_TRUNC);
+    
     
     /// Copiamos bloque a bloque del archivo interno al externo
     // ...
+    EstructuraNodoI nodoActual;
+    char buffer[TAM_BLOQUE_BYTES];
+    //leeNodoI(miSistemaDeFicheros,miSistemaDeFicheros->directorio.archivos[posicion].idxNodoI,&nodoActual);
+    
+   //printf("NODO ACTUAL VALORES EN EXPORT ES ... %d , %d , %d", miSistemaDeFicheros->directorio.archivos[posicion].idxNodoI , nodoActual.tamArchivo, nodoActual.numBloques);
+   /* int bytesRestantes = miSistemaDeFicheros->superBloque.tamBloque - (nodoActual.numBloques * miSistemaDeFicheros->superBloque.tamBloque - nodoActual.tamArchivo);
+   
+    
+    
+    
+    for (i = 0; i < nodoActual.numBloques - 1; i++) {
+        if (lseek(miSistemaDeFicheros->discoVirtual, nodoActual.idxBloques[i] * TAM_BLOQUE_BYTES, SEEK_SET) == (off_t) - 1) {
+            perror("Falló lseek en escribeDatos");
+            return -1;
+        }
+         if (read(miSistemaDeFicheros->discoVirtual, &buffer, TAM_BLOQUE_BYTES) == -1) {
+            perror("Falló read en escribeDatos");
+            return -1;
+        }
+            if (write(handle, &buffer, TAM_BLOQUE_BYTES) == -1) {
+            perror("Falló write en escribeDatos");
+            return -1;
+        }
+    }
+    if (lseek(miSistemaDeFicheros->discoVirtual, nodoActual.idxBloques[i] * TAM_BLOQUE_BYTES, SEEK_SET) == (off_t) - 1) {
+        perror("Falló lseek (2) en escribeDatos");
+        return -1;
+    }
+      if (read(miSistemaDeFicheros->discoVirtual, &buffer, bytesRestantes) == -1) {
+        perror("Falló read (2) en escribeDatos");
+        return -1;
+    }
+    
+    if (write(handle, &buffer, bytesRestantes) == -1) {
+        perror("Falló write (2) en escribeDatos");
+    }
+    */
 
     if (close(handle) == -1) {
         perror("myExport close");

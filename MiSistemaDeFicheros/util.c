@@ -298,30 +298,25 @@ int myExport(MiSistemaDeFicheros* miSistemaDeFicheros, char* nombreArchivoIntern
 	{
 	  return -1;
 	}
-  // handle = open(nombreArchivoExterno, O_RDONLY);
+  handle = open(nombreArchivoExterno, O_RDONLY);
     /// Si ya existe el archivo nombreArchivoExterno en linux preguntamos si sobreescribir
     // ...
-    /*if (handle != -1) {
-      char respuesta;
-      printf("El archivo ya se encuentra en el sistema ficheros de LINUX... Desea Sobreescribir?(S/N)?:");
+   if (handle != -1) {
+      char respuesta[2];
+      int aux1, aux2=83;
       
-      do
-      respuesta = getchar();
-    while (isspace(respuesta));
-      fflush(stdin);
-      while(respuesta !='s\n' || respuesta !='S'  || respuesta !='N'  || respuesta != 'n'  )
-      {
-	printf("Opcion no valida ( S/N ):");
-	  do
-	respuesta = getchar();
-	while (isspace(respuesta));
-	fflush(stdin);
+      do{
+      printf("El archivo ya se encuentra en el sistema ficheros de LINUX... Desea Sobreescribir?(S/N)?:");
+      scanf("%s",respuesta);
+      aux1= toupper(respuesta[0]);
+           
       }
-      if (respuesta == 'N' || respuesta == 'n' ) return 2;
+      while( aux1 != 83 || aux1!=78); //83==S 78==N
+
       
     }
-    //close(handle);
-    */
+    close(handle);
+    
     if ((handle=open(nombreArchivoExterno,O_CREAT | O_RDWR, S_IRUSR | S_IWUSR))==-1)
     {
       perror("Error abriendo archivo externo a exportar");

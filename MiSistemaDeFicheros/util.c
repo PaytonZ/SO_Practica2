@@ -204,11 +204,7 @@ int myImport(char* nombreArchivoExterno, MiSistemaDeFicheros* miSistemaDeFichero
 	*/
 	
 	// Buscar nodo-i libre y añadirlo al array de memoria -> malloc()
-	
-	
-	
 	int nodo_i = buscaNodoLibre(miSistemaDeFicheros);
-
 	
 	EstructuraNodoI *estructuraNodo = malloc(sizeof(EstructuraNodoI));
 	

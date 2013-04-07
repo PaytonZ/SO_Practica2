@@ -308,7 +308,7 @@ int myExport(MiSistemaDeFicheros* miSistemaDeFicheros, char* nombreArchivoIntern
 	      if ( fgets(respuesta, 100, stdin) != NULL ) {
 	      	printf("%s\n", respuesta);
 
-	      	putchar(toupper(respuesta[0]));
+	      	respuesta[0] = toupper(respuesta[0]);
 
 	      	printf("%s\n", respuesta);
 	      }
@@ -320,9 +320,9 @@ int myExport(MiSistemaDeFicheros* miSistemaDeFicheros, char* nombreArchivoIntern
 	      printf("Comparación: %d\n", ( respuesta[0] == 'N' ) );
 
 	      printf("Comparación completa: %d\n", respuesta[0] == 'S' && respuesta[0] == 'N' );
-	      printf("Comparación strcomp: %d\n", strcmp( respuesta, "S") != 0 && strcmp(respuesta, "N") != 0 );
+	      printf("Comparación strcomp: %d\n", strcmp( respuesta, "S") != 0 || strcmp(respuesta, "N") != 0 );
 
-  		} while ( strcmp( respuesta, "S") != 0 && strcmp(respuesta, "N") != 0 );
+  		} while ( strcmp( respuesta, "S") != 0 || strcmp(respuesta, "N") != 0 );
 
   		printf("%s\n", respuesta);
   	}

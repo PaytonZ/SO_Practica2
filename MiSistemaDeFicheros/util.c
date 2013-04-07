@@ -304,25 +304,20 @@ int myExport(MiSistemaDeFicheros* miSistemaDeFicheros, char* nombreArchivoIntern
       do{
       	  printf("El archivo ya se encuentra en el sistema ficheros de LINUX... Desea Sobreescribir (S/N)?: ");
 
-      	  // Lo ponemos en mayúsculas si ha leido algo.
+      	  // La función fgets lee una línea hasta \n y lo
+      	  // almacena en el buffer que le pasemos.
+      	  // Si no ha leido nada, el buffer estará vacío y 
+      	  // el puntero que develve la función será NULL
 	      if ( fgets(respuesta, 100, stdin) != NULL ) {
 	      	printf("%s\n", respuesta);
 
+	      	// Lo ponemos en mayúsculas si ha leido algo.
 	      	respuesta[0] = toupper(respuesta[0]);
 
 	      	printf("%s\n", respuesta);
 	      }
 
-	      printf("TRUE: %d\n", 1 == 1);
-	      printf("FALSE: %d\n", 1 != 1);
-
-	      printf("Comparación: %d\n", ( respuesta[0] == 'S' ) );
-	      printf("Comparación: %d\n", ( respuesta[0] == 'N' ) );
-
-	      printf("Comparación completa: %d\n", respuesta[0] == 'S' && respuesta[0] == 'N' );
-	      printf("Comparación strcomp: %d\n", strcmp( respuesta, "S") != 0 || strcmp(respuesta, "N") != 0 );
-
-  		} while ( strcmp( respuesta, "S") != 0 || strcmp(respuesta, "N") != 0 );
+  		} while ( respuesta[0] != 'S' && respuesta[0] != 'N' );
 
   		printf("%s\n", respuesta);
   	}

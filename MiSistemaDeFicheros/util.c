@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdio.h>
 
 // Formatea el disco virtual. Guarda el mapa de bits del super bloque 
 // y el directorio único.
@@ -294,29 +295,44 @@ int myExport(MiSistemaDeFicheros* miSistemaDeFicheros, char* nombreArchivoIntern
 	{
 	  return -1;
 	}
-  handle = open(nombreArchivoExterno, O_RDONLY);
+  	handle = open(nombreArchivoExterno, O_RDONLY);
     /// Si ya existe el archivo nombreArchivoExterno en linux preguntamos si sobreescribir
     // ...
    if (handle != -1) {
-      char respuesta[2];
-      int aux1, aux2=83;
+      char respuesta[100];
       
       do{
-      printf("El archivo ya se encuentra en el sistema ficheros de LINUX... Desea Sobreescribir?(S/N)?:");
-      scanf("%s",respuesta);
-      aux1= toupper(respuesta[0]);
-           
-      }
-      while( aux1 != 83 || aux1!=78); //83==S 78==N
+      	  printf("El archivo ya se encuentra en el sistema ficheros de LINUX... Desea Sobreescribir (S/N)?: ");
 
-      
-    }
+      	  // Lo ponemos en mayúsculas si ha leido algo.
+	      if ( fgets(respuesta, 100, stdin) != NULL ) {
+	      	printf("%s\n", respuesta);
+
+	      	putchar(toupper(respuesta[0]));
+
+	      	printf("%s\n", respuesta);
+	      }
+
+	      printf("TRUE: %d\n", 1 == 1);
+	      printf("FALSE: %d\n", 1 != 1);
+
+	      printf("Comparación: %d\n", ( respuesta[0] == 'S' ) );
+	      printf("Comparación: %d\n", ( respuesta[0] == 'N' ) );
+
+	      printf("Comparación completa: %d\n", respuesta[0] == 'S' && respuesta[0] == 'N' );
+	      printf("Comparación strcomp: %d\n", strcmp( respuesta, "S") != 0 && strcmp(respuesta, "N") != 0 );
+
+  		} while ( strcmp( respuesta, "S") != 0 && strcmp(respuesta, "N") != 0 );
+
+  		printf("%s\n", respuesta);
+  	}
+
     close(handle);
     
     if ((handle=open(nombreArchivoExterno,O_CREAT | O_RDWR, S_IRUSR | S_IWUSR))==-1)
     {
-      perror("Error abriendo archivo externo a exportar");
-    return -1; 
+    	perror("Error abriendo archivo externo a exportar");
+    	return -1; 
     }
     
      /// Copiamos bloque a bloque del archivo interno al externo

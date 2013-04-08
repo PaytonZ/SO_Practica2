@@ -309,17 +309,15 @@ int myExport(MiSistemaDeFicheros* miSistemaDeFicheros, char* nombreArchivoIntern
       	  // Si no ha leido nada, el buffer estará vacío y 
       	  // el puntero que develve la función será NULL
 	      if ( fgets(respuesta, 100, stdin) != NULL ) {
-	      	printf("%s\n", respuesta);
-
 	      	// Lo ponemos en mayúsculas si ha leido algo.
 	      	respuesta[0] = toupper(respuesta[0]);
 
-	      	printf("%s\n", respuesta);
+	      	
 	      }
 
   		} while ( respuesta[0] != 'S' && respuesta[0] != 'N' );
 
-  		printf("%s\n", respuesta);
+  		
   	}
 
     close(handle);
@@ -390,7 +388,7 @@ int myRm(MiSistemaDeFicheros* miSistemaDeFicheros, char* nombreArchivo) {
 	
 	// Obtiene el nodo-i asociado y lo actualiza
 	
-	leeNodoI(miSistemaDeFicheros,miSistemaDeFicheros->directorio.archivos[posicion].idxNodoI,&estructuraNodo);
+	leeNodoI(miSistemaDeFicheros,nodo_i,&estructuraNodo);
 	
 	estructuraNodo.libre=1;
 	
